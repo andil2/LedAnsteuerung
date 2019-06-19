@@ -16,9 +16,11 @@
 void *mirror(void* arg){
 	int clientfd = *(int *)arg;
 	char inbuffer[BUFSIZE];
-	
+	int ende = 0;
+	int count;
 	//lesen der empfangen Zeichen
-	int count = read(clientfd, inbuffer, sizeof(inbuffer));
+	while(ende == 0){
+	count = read(clientfd, inbuffer, sizeof(inbuffer));
 	switch(count){
 		case 0: printf("0,0,0,0\n");
 			digitalWrite(18, 0);
@@ -100,16 +102,24 @@ void *mirror(void* arg){
 			digitalWrite(23, 1);
 			digitalWrite(24, 1);
 			digitalWrite(25, 1); break;
-			
-		
+		case 'q':	printf("0,0,0,0\n");
+					digitalWrite(18, 0);
+					digitalWrite(23, 0);
+					digitalWrite(24, 0);
+					digitalWrite(25, 0);
+					write(clientfd, "LED", count);
+					close(clientfd);
+					ende = 1;
+					break;
 		default:printf("Sie haben eine ungueltige Zahl eingegeben\n"); break;
 		
 	} 
-	
+}
 	
 	//sendbuffer ==> clientsocket
 	write(clientfd, "LED", count);
 	close(clientfd);
+	
 }
 
 int main(int argc, char *argv[])
